@@ -1,0 +1,73 @@
+class dsu
+{
+    public:
+    vector<int> rank,parent;
+    int comp=0;
+    dsu(int n)
+    {
+        rank.resize(n,0);
+        parent.resize(n);
+        comp=n;
+        for(int i=0;i<n;i++)
+            {
+                parent[i]=i;
+            }
+        
+    }
+
+    int find(int u)
+    {
+        if(parent[u]==u)
+        {
+            return u;
+        }
+        return parent[u]=find(parent[u]);
+    }
+
+    void uni(int u,int v)
+    {
+        int upu=find(u);
+        int upv = find(v);
+        if(upu==upv)
+        {
+           return;
+         }
+        parent[upv]=upu;
+        comp--;
+        
+    }
+};
+
+class Solution {
+    using pp = pair<int,pair<int,int>>;
+public:
+    int minCost(int n, vector<vector<int>>& edges, int k) {
+        priority_queue<pp,vector<pp>,greater<pp>> pq;
+        dsu d(n);
+        for(auto e : edges)
+            {
+                pq.push({e[2],{e[0],e[1]}});
+            }
+
+         int ans=0;
+        while(!pq.empty() && d.comp>k)
+            {
+                auto p = pq.top();
+                int u = p.second.first;
+                int v = p.second.second;
+                int wt = p.first;
+                pq.pop();
+
+                if(d.find(u)!=d.find(v))
+                {
+                    d.uni(u,v);
+                    ans=max(ans,wt);
+                }
+            }
+
+        return ans;
+        
+
+        
+    }
+};
