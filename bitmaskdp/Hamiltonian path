@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int n;
+vector<vector<int>> adj;
+vector<vector<int>> dp;
+
+// Returns true if there's a Hamiltonian path ending at 'u' having visited 'mask'
+bool dfs(int mask, int u) {
+    if (mask == (1 << n) - 1) return true; // all nodes visited
+
+    if (dp[mask][u] != -1) return dp[mask][u];
+
+    for (int v : adj[u]) {
+        if (!(mask & (1 << v))) { // if v not visited
+            if (dfs(mask | (1 << v), v)) {
+                return dp[mask][u] = 1;
+            }
+        }
+    }
+
+    return dp[mask][u] = 0;
+}
+
+bool hasHamiltonianPath() {
+    dp.assign(1 << n, vector<int>(n, -1));
+
+    for (int start = 0; start < n; ++start) {
+        if (dfs(1 << start, start)) return true;
+    }
+    return false;
+}
+
+int main() {
+    int m;
+    cin >> n >> m;
+    adj.resize(n);
+
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u); // Undirected graph
+    }
+
+    if (hasHamiltonianPath())
+        cout << "YES\n";
+    else
+        cout << "NO\n";
+
+    return 0;
+}
